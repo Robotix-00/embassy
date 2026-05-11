@@ -18,6 +18,10 @@ pub enum UsbVersion {
     Two = 0x0200,
     /// Usb version 2.1
     TwoOne = 0x0210,
+    /// Usb Version 1.1
+    OneOne = 0x0110,
+    /// Usb Version 1.0
+    One = 0x0100,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
