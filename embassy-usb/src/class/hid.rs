@@ -91,6 +91,18 @@ pub struct Config<'d> {
     /// Max packet size for both the IN and OUT endpoints.
     pub max_packet_size: u16,
 
+    /// Same as poll_ms but specifically for the writer OUT endpoint
+    /// If set to None, the OUT endpoint falls back to 'poll_ms'
+    /// TODO: this is a breaking change, as no constructor exists on crate level to set default
+    /// values
+    pub out_poll_ms: Option<u8>,
+
+    /// Same as max_packet_size but specifically for the writer OUT endpoint
+    /// If set to None, the OUT endpoint falls back to 'max_packet_size'
+    /// TODO: this is a breaking change, as no constructor exists on crate level to set default
+    /// values
+    pub out_max_packet_size: Option<u16>,
+
     /// The HID subclass of this interface
     pub hid_subclass: HidSubclass,
 
@@ -188,7 +200,11 @@ fn build<'d, D: Driver<'d>>(
 
     let ep_in = alt.endpoint_interrupt_in(None, config.max_packet_size, config.poll_ms);
     let ep_out = if with_out_endpoint {
-        Some(alt.endpoint_interrupt_out(None, config.max_packet_size, config.poll_ms))
+        Some(alt.endpoint_interrupt_out(
+            None,
+            config.out_max_packet_size.unwrap_or(config.max_packet_size),
+            config.out_poll_ms.unwrap_or(config.poll_ms),
+        ))
     } else {
         None
     };
