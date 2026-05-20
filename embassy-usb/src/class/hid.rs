@@ -78,6 +78,9 @@ pub struct Config<'d> {
     /// HID report descriptor.
     pub report_descriptor: &'d [u8],
 
+    /// Optional override for the report descriptor len
+    pub report_descriptor_len: Option<usize>,
+
     /// Handler for control requests.
     pub request_handler: Option<&'d mut dyn RequestHandler>,
 
@@ -167,7 +170,7 @@ fn build<'d, D: Driver<'d>>(
     config: Config<'d>,
     with_out_endpoint: bool,
 ) -> (Option<D::EndpointOut>, D::EndpointIn, &'d AtomicUsize) {
-    let len = config.report_descriptor.len();
+    let len = config.report_descriptor_len.unwrap_or(config.report_descriptor.len());
 
     let mut func = builder.function(USB_CLASS_HID, config.hid_subclass as u8, config.hid_boot_protocol as u8);
     let mut iface = func.interface();
